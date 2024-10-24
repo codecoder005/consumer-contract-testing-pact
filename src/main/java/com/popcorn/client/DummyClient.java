@@ -4,6 +4,7 @@ import com.popcorn.model.ComplexRequestObject;
 import com.popcorn.model.ComplexResponseObject;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -18,4 +19,7 @@ public interface DummyClient {
             produces = {MediaType.APPLICATION_JSON_VALUE}
     )
     ComplexResponseObject update(@RequestBody ComplexRequestObject request);
+
+    @GetMapping(path = "/dummy-client/get", produces = {MediaType.APPLICATION_JSON_VALUE})
+    ComplexResponseObject get();
 }
