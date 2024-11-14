@@ -36,7 +36,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ExtendWith(PactConsumerTestExt.class)
 @PactTestFor(
-        providerName = JsonPlaceHolderClientConsumerContractTest.PROVIDER,
+        providerName = DummyClientConsumerContractTest.PROVIDER,
         hostInterface = "localhost",
         port = "18090"
 )
@@ -44,8 +44,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @ActiveProfiles(profiles = {"contract-test"})
 @Slf4j
 public class DummyClientConsumerContractTest {
-    static final String PROVIDER = "dummy-client-provider";
+    public static final String PROVIDER = "provider-app";
     private static final String CONSUMER = "consumer-app";
+
+    private static final String USER_ID = "2109897817";
 
     private static final String DUMMY_CLIENT_API_BASE_PATH = "/dummy-client/update";
 
@@ -61,9 +63,11 @@ public class DummyClientConsumerContractTest {
                 .given("update data using complex request object")
                 .uponReceiving("update data using complex request object")
                 .method(HttpMethod.PUT.name())
-                .path(DUMMY_CLIENT_API_BASE_PATH)
+                .path(DUMMY_CLIENT_API_BASE_PATH+"/"+USER_ID)
                 .headers(requestHeaders())
+                .query("sortBy=age")
                 .matchHeader(HttpHeaders.AUTHORIZATION, "^Bearer [A-Za-z0-9-_]+\\.[A-Za-z0-9-_]+\\.[A-Za-z0-9-_]+$", "Bearer "+JWT_EXAMPLE_TOKEN)
+                .matchHeader("custom-header", "custom-header-value")
                 .body(newJsonBody(object -> {
                     object.numberType("age", (byte) 25);  // Byte
                     object.numberType("salary", (short) 5000);  // Short
@@ -122,13 +126,15 @@ public class DummyClientConsumerContractTest {
         // ComplexResponseObject response = this.dummyClient.update(requestObject);
 
         RestTemplate restTemplate = getRestTemplate();
+        final String QUERY_PARAMS = "?sortBy=age";
         URI uri = UriComponentsBuilder
-                .fromUriString(mockServer.getUrl()+DUMMY_CLIENT_API_BASE_PATH)
+                .fromUriString(mockServer.getUrl()+DUMMY_CLIENT_API_BASE_PATH+"/"+USER_ID+QUERY_PARAMS)
                 .build()
                 .toUri();
 
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
+        headers.add("custom-header", "custom-header-value");
         headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + JWT_EXAMPLE_TOKEN);
 
         ResponseEntity<ComplexResponseObject> response = restTemplate.exchange(

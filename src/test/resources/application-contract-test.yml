@@ -1,2 +1,5 @@
 dummy-client:
   url: http://localhost:18090
+
+json-place-holder:
+  url: http://localhost:8090

@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.popcorn</groupId>
 	<artifactId>consumer-contract-testing-pact</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<name>consumer-contract-testing-pact</name>
 	<description>Demo project for Spring Boot</description>
 	<url/>
@@ -115,6 +115,25 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>3.5.0</version>
+			</plugin>
+			<plugin>
+				<groupId>au.com.dius</groupId>
+				<artifactId>pact-jvm-provider-maven</artifactId>
+				<version>4.0.10</version>
+				<configuration>
+					<pactBrokerUrl>${pactflow.broker.url}</pactBrokerUrl>
+					<pactBrokerToken>${pactflow.broker.token}</pactBrokerToken>
+					<pactDirectory>target/pacts</pactDirectory> <!-- Path to your generated Pact files -->
+				</configuration>
+				<executions>
+					<execution>
+						<id>publish</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>publish</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
